@@ -79,7 +79,7 @@ fun MyImage() {
         modifier = Modifier
             .size(100.dp)
             .clip(CircleShape),
-        painter = painterResource(R.drawable.bear),
+        painter = painterResource(R.drawable.pear),
         contentDescription = "foreground"
     )
 }
