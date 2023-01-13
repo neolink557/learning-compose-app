@@ -11,7 +11,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,11 +20,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.*
 import com.example.learning.ui.theme.LearningTheme
 
 val msg = Message(
     "Hola Marge",
-    "Este es mi primer uso de compose"
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris id feugiat eros. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Quisque bibendum velit ut velit blandit cursus. In et iaculis enim. Nam tincidunt lectus a nisi posuere, at volutpat orci porttitor. In venenatis erat eu libero posuere, ac blandit quam luctus. Phasellus vel neque lacinia, fringilla dui ac, condimentum ipsum. Vestibulum commodo commodo felis sed pharetra. Curabitur eget molestie mi. Phasellus vel porta dolor, vel dapibus nisi. Integer consequat leo id nisi congue blandit."
 )
 val myMessageList = listOf(
     msg,
@@ -61,13 +61,17 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MyView(messages: List<Message>) {
-        LazyColumn {
-            items(messages) { message ->
-                MyMessageLayout(
-                    message
-                )
-            }
+    LazyColumn(
+        Modifier
+            .background(MaterialTheme.colors.background)
+            .fillMaxWidth(1f)
+    ) {
+        items(messages) { message ->
+            MyMessageLayout(
+                message
+            )
         }
+    }
 }
 
 @Composable
@@ -77,26 +81,38 @@ fun MyMessageLayout(message: Message) {
 
 @Composable
 fun MyRows(message: Message) {
+    var expanded by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .padding(8.dp)
             .clickable(onClick = { /* Ignoring onClick */ })
-            .padding(1.dp), elevation = 10.dp, backgroundColor = MaterialTheme.colors.background
+            .padding(1.dp)
+            .clickable {
+                expanded = !expanded
+            }, elevation = 10.dp, backgroundColor = MaterialTheme.colors.background
     ) {
         Row(modifier = Modifier.padding(8.dp)) {
             MyImage()
-            MyTexts(message)
+            MyTexts(message, expanded)
         }
     }
 
 }
 
 @Composable
-fun MyTexts(message: Message) {
-    Column(modifier = Modifier.padding(8.dp)) {
-        MyText(text = message.tittle, 32, MaterialTheme.colors.primary)
+fun MyTexts(message: Message, expanded: Boolean) {
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
+    ) {
+        MyText(text = message.tittle, 32, MaterialTheme.colors.primary, 1)
         Spacer(modifier = Modifier.height(2.dp))
-        MyText(text = message.body, 16, MaterialTheme.colors.onBackground)
+        MyText(
+            text = message.body,
+            16,
+            MaterialTheme.colors.onBackground,
+            if (expanded) Int.MAX_VALUE else 1
+        )
     }
 }
 
@@ -112,12 +128,13 @@ fun MyImage() {
 }
 
 @Composable
-fun MyText(text: String, fontSize: Int, color: Color) {
+fun MyText(text: String, fontSize: Int, color: Color, maxLines: Int = Int.MAX_VALUE) {
     Text(
         modifier = Modifier.wrapContentWidth(Alignment.Start),
         fontSize = fontSize.sp,
         text = text,
-        color = color
+        color = color,
+        maxLines = maxLines
     )
 }
 
@@ -125,6 +142,6 @@ fun MyText(text: String, fontSize: Int, color: Color) {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
 @Composable
 fun PreviewTexts() {
-    MyView(myMessageList)
+    LearningTheme { MyView(myMessageList) }
 }
 
