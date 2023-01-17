@@ -31,8 +31,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
         setUpAuth()
-        authenticate {
-            viewModel.isAuth(it)
+        viewModel.launch.observe(this){
+            if (it){
+                authenticate {
+                    viewModel.isAuth(it)
+                }
+            }
         }
 
     }

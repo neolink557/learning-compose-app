@@ -26,22 +26,20 @@ import com.example.learning.R
 import com.example.learning.navigation.AppScreens
 import com.example.learning.ui.main.MainViewModel
 import com.example.learning.ui.theme.LearningTheme
+import kotlinx.coroutines.delay
+
 private lateinit var viewModel: MainViewModel
-private  var navigateYet = false
 
 @Composable
 fun LoginScreen(navController: NavController,vViewModel: MainViewModel) {
     viewModel = vViewModel
-    Scaffold(topBar = {
-        TopAppBar() {
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = "First Screen",
-                fontSize = 25.sp
-            )
-        }
-    }) {
+    Scaffold {
         LearningTheme { BodyContent(navController) }
+    }
+
+    LaunchedEffect(key1 = true){
+        delay(1000)
+        viewModel.hasLaunch(true)
     }
 }
 
@@ -49,7 +47,9 @@ fun LoginScreen(navController: NavController,vViewModel: MainViewModel) {
 
 @Composable
 private fun BodyContent(navController: NavController) {
-    var navigate = false
+    var navigateYet by remember {
+        mutableStateOf(false)
+    }
     var auth by remember {
         mutableStateOf(false)
     }
@@ -71,7 +71,8 @@ private fun BodyContent(navController: NavController) {
         Image(
             modifier = Modifier
                 .size(150.dp)
-                .clip(CircleShape).clickable {
+                .clip(CircleShape)
+                .clickable {
                     viewModel.hasLaunch(true)
                 },
             painter = painterResource(R.drawable.pear),
@@ -80,15 +81,17 @@ private fun BodyContent(navController: NavController) {
     }
 
      viewModel.auth.observeAsState().value?.let {
-         navigate = it
-         if (navigate and !navigateYet){
+         if (it and !navigateYet){
+             navController.popBackStack()
              navController.navigate(
                  route = AppScreens.FirstScreen.route
              )
+             auth = it
              navigateYet = true
          }
      }
 }
+
 
 @Preview(showSystemUi = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
